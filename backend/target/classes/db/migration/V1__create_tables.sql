@@ -1,0 +1,60 @@
+CREATE TABLE IF NOT EXISTS users (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(100),
+    role VARCHAR(20) NOT NULL DEFAULT 'ADMIN',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS categories (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE,
+    slug VARCHAR(50) NOT NULL UNIQUE,
+    description TEXT
+);
+
+CREATE TABLE IF NOT EXISTS tags (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE,
+    slug VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS articles (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    summary VARCHAR(500),
+    cover_image VARCHAR(255),
+    slug VARCHAR(255) NOT NULL UNIQUE,
+    status VARCHAR(20) NOT NULL DEFAULT 'DRAFT',
+    view_count BIGINT DEFAULT 0,
+    like_count BIGINT DEFAULT 0,
+    category_id BIGINT,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS article_tag (
+    article_id BIGINT NOT NULL,
+    tag_id BIGINT NOT NULL,
+    PRIMARY KEY (article_id, tag_id),
+    FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE,
+    FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS comments (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    article_id BIGINT NOT NULL,
+    author_name VARCHAR(100) NOT NULL,
+    author_email VARCHAR(100),
+    content TEXT NOT NULL,
+    parent_id BIGINT,
+    is_approved BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE,
+    FOREIGN KEY (parent_id) REFERENCES comments(id) ON DELETE CASCADE
+);
+
+INSERT INTO users (username, password, email, role) VALUES ('admin', '$2a$10$N9qo8uLOickgx2ZMRZoMye.IjzqAKL9xL5jvMFVdNJHvGCgTq/VEq', 'admin@example.com', 'ADMIN');
