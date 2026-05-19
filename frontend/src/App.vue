@@ -1,10 +1,12 @@
 <template>
   <div class="min-h-screen bg-gray-50">
     <router-view />
+    <BackToTop />
   </div>
 </template>
 
 <script setup>
+import BackToTop from './components/BackToTop.vue'
 </script>
 
 <style>
